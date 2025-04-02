@@ -18,6 +18,8 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
 </head>
 <body>
 
+<?php include "navbar.php"; ?>
+
 <div class="container mt-5">
     <h2 class="text-center text-primary">Admin Panel</h2>
 

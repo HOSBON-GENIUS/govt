@@ -2,17 +2,16 @@
 require "config.php";
 session_start();
 
-file_put_contents("debug.log", print_r($_POST, true));
-
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $project_id = isset($_POST["project_id"]) && is_numeric($_POST["project_id"]) ? (int)$_POST["project_id"] : null;
+    $comment_text = isset($_POST["comment_text"]) ? trim($_POST["comment_text"]) : "";
+    $user_id = isset($_SESSION["user_id"]) ? $_SESSION["user_id"] : null;
 
-if (!$project_id || empty($comment_text)) {
-    echo json_encode(["error" => "Missing or invalid project ID or comment."]);
-    exit;
-}
-
+    // Validate all required data
+    if (!$project_id || empty($comment_text) || !$user_id) {
+        echo json_encode(["error" => "Missing or invalid project ID, comment, or user not logged in."]);
+        exit;
+    }
 
     // Insert the comment first
     $stmt = $conn->prepare("INSERT INTO comment (project_id, user_id, comment_text) VALUES (?, ?, ?)");

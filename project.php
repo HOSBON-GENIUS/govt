@@ -52,20 +52,20 @@ if (!$project) {
     <div class="card-body">
       <!-- Comment form (anyone can post) -->
       <form id="commentForm" enctype="multipart/form-data">
-  <input type="hidden" name="project_id" value="<?= $project_id ?>"> <!-- MUST be inside -->
+          <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
+          
+          <div class="mb-2">
+              <textarea name="comment_text" class="form-control" placeholder="Leave a comment..." required></textarea>
+          </div>
   
-  <div class="mb-2">
-    <textarea name="comment_text" class="form-control" placeholder="Leave a comment..." required></textarea>
-  </div>
-
-  <div class="mb-2">
-    <label class="form-label">Optional: Upload Image or Video</label>
-    <input type="file" name="media" class="form-control" accept="image/*,video/*">
-  </div>
-
-  <button class="btn btn-primary btn-sm">Post Comment</button>
-  <div id="commentStatus" class="mt-2 small text-success"></div>
-</form>
+          <div class="mb-2">
+              <label class="form-label">Optional: Upload Image or Video</label>
+              <input type="file" name="media" class="form-control" accept="image/*,video/*">
+          </div>
+  
+          <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+          <div id="commentStatus" class="mt-2 small text-success"></div>
+      </form>
 
 
 
@@ -81,38 +81,45 @@ if (!$project) {
 
 <script>
 $(document).ready(function(){
-  loadComments();
+    loadComments();
 
-  function loadComments() {
-    $.get("view_comments.php", { project_id: <?= $project_id ?> }, function(data){
-      $("#commentsSection").html(data);
-    });
-  }
-
-$("#commentForm").submit(function(e){
-  e.preventDefault();
-
-  let formData = new FormData(this);
-
-  $.ajax({
-    url: "add_comment.php",
-    method: "POST",
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function(response){
-      let data = JSON.parse(response);
-      if (data.message) {
-        $("#commentStatus").text(data.message);
-        $("#commentForm")[0].reset();
-        loadComments();
-      } else {
-        $("#commentStatus").text(data.error || "Something went wrong.");
-      }
+    function loadComments() {
+        $.get("view_comments.php", { project_id: <?= $project_id ?> }, function(data){
+            $("#commentsSection").html(data);
+        });
     }
-  });
-});
 
+    $("#commentForm").submit(function(e){
+        e.preventDefault();
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: "add_comment.php",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response){
+                try {
+                    let data = JSON.parse(response);
+                    if (data.message) {
+                        $("#commentStatus").text(data.message).removeClass('text-danger').addClass('text-success');
+                        $("#commentForm")[0].reset();
+                        loadComments();
+                    } else {
+                        $("#commentStatus").text(data.error || "Something went wrong.").removeClass('text-success').addClass('text-danger');
+                    }
+                } catch(e) {
+                    $("#commentStatus").text("Error processing response").removeClass('text-success').addClass('text-danger');
+                    console.log(response);
+                }
+            },
+            error: function(xhr, status, error) {
+                $("#commentStatus").text("Error: " + error).removeClass('text-success').addClass('text-danger');
+            }
+        });
+    });
+});
 </script>
 
 </body>
