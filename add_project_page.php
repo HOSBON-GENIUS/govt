@@ -15,6 +15,8 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "project_manager") {
 </head>
 <body>
 
+<?php include "navbar.php"; ?>
+
 <div class="container mt-5">
   <h3 class="text-center text-success">Post a New Project</h3>
 
@@ -24,6 +26,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "project_manager") {
     <input type="number" id="budget" class="form-control my-2" placeholder="Budget (KES)" required>
     <input type="date" id="start_date" class="form-control my-2" required>
     <input type="date" id="end_date" class="form-control my-2" required>
+    <input type="number" id="progress" class="form-control my-2" placeholder="Project Progress (%)" min="0" max="100" required>
     <button type="submit" class="btn btn-primary w-100">Add Project</button>
   </form>
 
@@ -40,7 +43,8 @@ $("#projectForm").submit(function(e){
     description: $("#description").val(),
     budget: $("#budget").val(),
     start_date: $("#start_date").val(),
-    end_date: $("#end_date").val()
+    end_date: $("#end_date").val(),
+    progress: $("#progress").val()
   }, function(response){
     let data = JSON.parse(response);
     if (data.message) {

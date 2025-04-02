@@ -15,13 +15,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $budget = $_POST["budget"];
     $start_date = $_POST["start_date"];
     $end_date = $_POST["end_date"];
+    $progress = $_POST["progress"];
     $manager_id = $_SESSION["user_id"];
 
-    $sql = "INSERT INTO project (title, description, budget, start_date, end_date, project_manager_id)
-            VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO project (title, description, budget, start_date, end_date, progress, project_manager_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
 
-    if ($stmt->execute([$title, $description, $budget, $start_date, $end_date, $manager_id])) {
+    if ($stmt->execute([$title, $description, $budget, $start_date, $end_date, $progress, $manager_id])) {
         echo json_encode(["message" => "Project added successfully."]);
     } else {
         echo json_encode(["error" => "Project creation failed."]);
